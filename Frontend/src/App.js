@@ -14,6 +14,7 @@ const App = () => {
   });
   const [roomName, setRoomName] = useState('');
 
+
   const handleLogin = (credentials) => {
     // Extraemos solo los datos necesarios para el estado
     setUserData({
@@ -58,7 +59,10 @@ const App = () => {
         />
       )}
       {currentView === 'register' && (
-        <AuthRegisterForm onRegister={handleRegister} />
+        <AuthRegisterForm
+        onRegister={handleRegister}
+        onSwitchToLogin={() => setCurrentView('login')} 
+       />
       )}
       {currentView === 'home' && (
         <ChatHome
@@ -66,6 +70,8 @@ const App = () => {
           onJoinChat={handleJoinChat}
           onCreateChat={handleCreateChat}
           onlineUsers={onlineUsers}
+          onLogout={() => setCurrentView('login')}
+
         />
       )}
       {currentView === 'chat' && (
