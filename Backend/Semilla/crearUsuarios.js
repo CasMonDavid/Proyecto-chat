@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const User = require('../Modelos/usuario');
 
 
-mongoose.connect('mongodb://localhost:27017/chatdb', {
+mongoose.connect('mongodb://localhost:27017/chat', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
