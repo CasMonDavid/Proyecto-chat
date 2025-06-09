@@ -23,6 +23,9 @@ app.use("/api/usuarios", usuariosRutas);
 const sesionesRutas = require("./Rutas/sesionRutas")
 app.use("/api/sesiones", sesionesRutas);
 
+const MensajesRutas = require('./Rutas/mensajeRutas')
+app.use("/api/mensajes", MensajesRutas)
+
 app.listen(port, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${port}`);
 });
