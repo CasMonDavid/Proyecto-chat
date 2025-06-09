@@ -21,7 +21,7 @@ const handleLogin = async (credentials) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        usernameOrEmail: credentials.username, // o email
+        usernameOrEmail: credentials.username,
         contrasenna: credentials.password
       })
     });
@@ -32,7 +32,9 @@ const handleLogin = async (credentials) => {
       return;
     }
 
-    // Guarda el token si lo necesitas: localStorage.setItem('token', data.token);
+    // Guarda el token para futuras peticiones
+    localStorage.setItem('token', data.token);
+
     setUserData({
       username: data.nombre || credentials.username,
       email: data.email
@@ -78,9 +80,45 @@ const handleLogin = async (credentials) => {
     setCurrentView('chat');
   };
 
-  const handleCreateChat = (newRoom) => {
+  const crearSala = async (nombreSala) => {
+  const token = localStorage.getItem('token');
+  const response = await fetch('http://localhost:3001/api/sesiones/crear', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ nombre: nombreSala })
+  });
+  return await response.json();
+};
+
+const buscarSala = async (nombreSala) => {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`http://localhost:3001/api/sesiones/buscar?nombre=${encodeURIComponent(nombreSala)}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return await response.json();
+};
+
+const unirseSala = async (nombreSala) => {
+  const token = localStorage.getItem('token');
+  const response = await fetch('http://localhost:3001/api/sesiones/add-usuario', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ nombre: nombreSala })
+  });
+  return await response.json();
+};
+
+const handleCreateChat = async (newRoom) => {
   setRoomName(newRoom);
-  createChat();
+  await crearSala(newRoom);
   setCurrentView('chat');
 };
 
