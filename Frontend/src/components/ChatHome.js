@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
 
-const ChatHome = ({ username, onJoinChat, onCreateChat, onlineUsers, onLogout }) => {
+const ChatHome = ({ username, onJoinChat, onCreateChat, onlineUsers, onLogout, buscarSala, unirseSala }) => {
   const [roomName, setRoomName] = useState('');
   const [error, setError] = useState('');
 
-  const handleJoin = () => {
-    if (roomName.trim().length < 5) {
-      setError('El nombre del chat debe tener al menos 5 dígitos.');
-      return;
-    }
+  const handleJoin = async () => {
+  if (roomName.trim().length < 5) {
+    setError('El nombre del chat debe tener al menos 5 dígitos.');
+    return;
+  }
+  setError('');
+  // Buscar la sala en la BD
+  const result = await buscarSala(roomName);
+  if (!result.session) {
+    setError('Sala no encontrada.');
+    return;
+  }
+  // Unirse a la sala
+  const joinResult = await unirseSala(roomName);
+  if (joinResult.session) {
     setError('');
     onJoinChat(roomName);
-  };
+  } else {
+    setError(joinResult.message || 'No se pudo unir a la sala.');
+  }
+};
 
   const handleCreate = () => {
   setError('');

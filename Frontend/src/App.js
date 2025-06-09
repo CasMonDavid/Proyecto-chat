@@ -122,9 +122,22 @@ const handleCreateChat = async (newRoom) => {
   setCurrentView('chat');
 };
 
-  const handleLeaveChat = () => {
-    setCurrentView('home');
-  };
+const salirSala = async (nombreSala) => {
+  const token = localStorage.getItem('token');
+  await fetch('http://localhost:3001/api/sesiones/remove-usuario', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ nombre: nombreSala })
+  });
+};
+
+  const handleLeaveChat = async () => {
+  await salirSala(roomName); 
+  setCurrentView('home');
+};
 
   return (
     <>
@@ -147,7 +160,8 @@ const handleCreateChat = async (newRoom) => {
           onCreateChat={handleCreateChat}
           onlineUsers={onlineUsers}
           onLogout={() => setCurrentView('login')}
-
+          buscarSala={buscarSala}       
+          unirseSala={unirseSala} 
         />
       )}
       {currentView === 'chat' && (

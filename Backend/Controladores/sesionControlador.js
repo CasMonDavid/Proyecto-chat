@@ -52,25 +52,40 @@ const addParticipant = async (req, res) => {
 
 const searchSession = async (req, res) => {
     try {
-        const { nombre } = req.body;
+        const { nombre } = req.query; // <-- Cambia de req.body a req.query
 
-        if (!nombre) return res.status(400).json({ message: "Proporcione un nombre para buscar." });
+        if (!nombre) return res.status(400).json({ message: "Falta el nombre de la sala." });
 
-        const sesiones = await Sesion.find({
-            nombre: { $regex: nombre, $options: "i" }
-        });
+        const session = await Sesion.findOne({ nombre });
+        if (!session) return res.status(404).json({ message: "Sesión no encontrada." });
 
-        res.status(200).json(sesiones);
-        
+        res.status(200).json({ session });
     } catch (err) {
         console.error("Error al buscar sesiones:", err);
-        res.status(500).json({ message: "Error del servidor" });
+        res.status(500).json({ message: "Error del servidor", error: err });
     }
+};
+
+const removeParticipant = async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    const userId = req.user.userId;
+    const session = await Sesion.findOne({ nombre });
+    if (!session) return res.status(404).json({ message: "Sesión no encontrada." });
+
+    session.participantes = session.participantes.filter(id => id.toString() !== userId);
+    await session.save();
+
+    res.status(200).json({ message: "Usuario removido de la sesión.", session });
+  } catch (err) {
+    res.status(500).json({ message: "Error del servidor", error: err });
+  }
 };
 
 module.exports = 
 {
     createSession,
     addParticipant,
-    searchSession
+    searchSession,
+    removeParticipant
 };
