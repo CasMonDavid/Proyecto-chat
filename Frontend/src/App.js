@@ -24,14 +24,34 @@ const App = () => {
     setCurrentView('home');
   };
 
-  const handleRegister = (credentials) => {
-    // Extraemos solo los datos necesarios para el estado
+  const handleRegister = async (credentials) => {
+  try {
+    // El backend espera: nombre, email, contrasenna
+    const response = await fetch('http://localhost:3001/api/usuarios/registrar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: credentials.username,
+        email: credentials.email,
+        contrasenna: credentials.password
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      alert(data.message || 'Error al registrar usuario');
+      return;
+    }
+
     setUserData({
       username: credentials.username,
       email: credentials.email
     });
     setCurrentView('home');
-  };
+  } catch (error) {
+    alert('Error de red o servidor');
+  }
+};
 
   const handleJoinChat = (room) => {
     setRoomName(room);
