@@ -1,14 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3001'); // Asegúrate que el puerto es correcto
+
+socket.on('connect', () => {
+  console.log('Conectado al servidor de sockets:', socket.id);
+});
 
 const ChatRoom = ({ roomName, username, onLeave }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const messagesEndRef = useRef(null);
 
-  const handleSendMessage = () => {
+  // Unirse a la sala al montar el componente
+  useEffect(() => {
+    socket.emit('joinRoom', roomName);
+
+    // Escuchar mensajes nuevos
+    socket.on('recibir_mensaje', (mensaje) => {
+      console.log('Mensaje recibido por socket:', mensaje); 
+      setMessages((prev) => [...prev, mensaje]);
+    });
+
+    return () => {
+      socket.off('recibir_mensaje');
+    };
+  }, [roomName]);
+
+  // Scroll automático al último mensaje
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSendMessage = async () => {
     if (message.trim()) {
-      setMessages([...messages, { user: username, text: message }]);
+      // Guarda el mensaje en la BD
+      await enviarMensaje(roomName, message);
+
+      // Envía el mensaje por socket a la sala
+      const mensajeObj = { user: username, text: message, content: message };
+      socket.emit('nuevo_mensaje', { roomName, mensaje: mensajeObj });
+
+      setMessages([...messages, mensajeObj]);
       setMessage('');
     }
+  };
+
+  const enviarMensaje = async (nombreSesion, contenido) => {
+    const token = localStorage.getItem('token');
+    await fetch('http://localhost:3001/api/mensajes/enviar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ nombreSesion, contenido })
+    });
   };
 
   return (
@@ -33,6 +80,7 @@ const ChatRoom = ({ roomName, username, onLeave }) => {
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
         <div className="p-4 border-t flex">

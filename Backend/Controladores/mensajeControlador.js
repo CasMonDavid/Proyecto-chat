@@ -3,6 +3,7 @@ const Sesion = require('../Modelos/sesion')
 
 const sendMessage = async (req, res) => {
     try {
+        console.log('BODY:', req.body);
         const { nombreSesion, contenido } = req.body;
         const userId = req.user.userId;
 
