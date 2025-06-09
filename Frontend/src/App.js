@@ -15,14 +15,33 @@ const App = () => {
   const [roomName, setRoomName] = useState('');
 
 
-  const handleLogin = (credentials) => {
-    // Extraemos solo los datos necesarios para el estado
+const handleLogin = async (credentials) => {
+  try {
+    const response = await fetch('http://localhost:3001/api/usuarios/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        usernameOrEmail: credentials.username, // o email
+        contrasenna: credentials.password
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      alert(data.message || 'Error al iniciar sesión');
+      return;
+    }
+
+    // Guarda el token si lo necesitas: localStorage.setItem('token', data.token);
     setUserData({
-      username: credentials.username,
-      email: credentials.email
+      username: data.nombre || credentials.username,
+      email: data.email
     });
     setCurrentView('home');
-  };
+  } catch (error) {
+    alert('Error de red o servidor');
+  }
+};
 
   const handleRegister = async (credentials) => {
   try {

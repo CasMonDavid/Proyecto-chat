@@ -34,22 +34,37 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { email, contrasenna } = req.body;
-    
-        if (!email || !contrasenna) return res.status(400).json({ message: "Todos los campos son obligatorios." });
-    
-        const user = await Usuario.findOne({ email });
-        if (!user) return res.status(409).json({ message: "Usuario no encontrado." });
-    
+        console.log('BODY LOGIN:', req.body);
+        console.log('HEADERS:', req.headers);
+        const { usernameOrEmail, contrasenna } = req.body;
+
+        if (!usernameOrEmail || !contrasenna) {
+            return res.status(400).json({ message: "Todos los campos son obligatorios." });
+        }
+
+        // Buscar por nombre de usuario o email
+        const user = await Usuario.findOne({
+            $or: [
+                { nombre: usernameOrEmail },
+                { email: usernameOrEmail }
+            ]
+        });
+
+        if (!user) {
+            return res.status(409).json({ message: "Usuario no encontrado." });
+        }
+
         const isMatch = await bcrypt.compare(contrasenna, user.contrasenna);
-        if (!isMatch) return res.status(401).json({ message: "Contraseña incorrecta" });
-    
+        if (!isMatch) {
+            return res.status(401).json({ message: "Contraseña incorrecta" });
+        }
+
         const token = jwt.sign(
-          { userId: user._id, nombre: user.nombre },
-          process.env.JWT_SECRET,
-          { expiresIn: "1d" } // el token durará 1 día
+            { userId: user._id, nombre: user.nombre },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
         );
-    
+
         res.json({ message: "Login exitoso", token });
     } catch (err) {
         console.error("Error en loginUser:", err);

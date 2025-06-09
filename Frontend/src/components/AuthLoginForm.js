@@ -15,21 +15,22 @@ const AuthLoginForm = ({ onLogin, onSwitchToRegister }) => {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const validationErrors = validate();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
 
-    setIsLoading(true);
-    try {
-      await onLogin(formData);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  setIsLoading(true);
+  try {
+    console.log('Login formData:', formData); // <-- Agrega esto
+    await onLogin(formData);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
