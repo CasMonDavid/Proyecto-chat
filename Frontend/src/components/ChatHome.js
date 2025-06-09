@@ -5,8 +5,8 @@ const ChatHome = ({ username, onJoinChat, onCreateChat, onlineUsers, onLogout })
   const [error, setError] = useState('');
 
   const handleJoin = () => {
-    if (roomName.trim().length < 4) {
-      setError('El nombre del chat debe tener al menos 4 caracteres.');
+    if (roomName.trim().length < 5) {
+      setError('El nombre del chat debe tener al menos 5 dígitos.');
       return;
     }
     setError('');
@@ -16,7 +16,7 @@ const ChatHome = ({ username, onJoinChat, onCreateChat, onlineUsers, onLogout })
   const handleCreate = () => {
   setError('');
   // Generar un ID aleatorio de 4 dígitos
-  const randomId = Math.floor(1000 + Math.random() * 9000).toString();
+  const randomId = Math.floor(10000 + Math.random() * 90000).toString();
   const newRoomName = randomId;
   setRoomName(newRoomName);
   onCreateChat(newRoomName);
