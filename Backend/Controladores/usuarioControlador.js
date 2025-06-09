@@ -34,8 +34,6 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        console.log('BODY LOGIN:', req.body);
-        console.log('HEADERS:', req.headers);
         const { usernameOrEmail, contrasenna } = req.body;
 
         if (!usernameOrEmail || !contrasenna) {
