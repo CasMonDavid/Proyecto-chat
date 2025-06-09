@@ -17,7 +17,7 @@ const ChatHome = ({ username, onJoinChat, onCreateChat, onlineUsers, onLogout })
   setError('');
   // Generar un ID aleatorio de 4 dígitos
   const randomId = Math.floor(1000 + Math.random() * 9000).toString();
-  const newRoomName = `Sala-${randomId}`;
+  const newRoomName = randomId;
   setRoomName(newRoomName);
   onCreateChat(newRoomName);
 };
