@@ -20,8 +20,8 @@ app.use(express.json());
 const usuariosRutas = require("./Rutas/usuarioRutas");
 app.use("/api/usuarios", usuariosRutas);
 
-//const messageRoutes = require("./routes/messageRoutes");
-//app.use("/api/messages", messageRoutes);
+const sesionesRutas = require("./Rutas/sesionRutas")
+app.use("/api/sesiones", sesionesRutas);
 
 app.listen(port, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${port}`);
