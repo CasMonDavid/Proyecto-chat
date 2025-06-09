@@ -78,12 +78,11 @@ const handleLogin = async (credentials) => {
     setCurrentView('chat');
   };
 
-  const handleCreateChat = () => {
-    const newRoom = `Sala-${Date.now()}`;
-    setRoomName(newRoom);
-    createChat();
-    setCurrentView('chat');
-  };
+  const handleCreateChat = (newRoom) => {
+  setRoomName(newRoom);
+  createChat();
+  setCurrentView('chat');
+};
 
   const handleLeaveChat = () => {
     setCurrentView('home');

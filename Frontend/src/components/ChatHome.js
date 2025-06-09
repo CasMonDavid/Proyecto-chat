@@ -14,9 +14,13 @@ const ChatHome = ({ username, onJoinChat, onCreateChat, onlineUsers, onLogout })
   };
 
   const handleCreate = () => {
-    setError('');
-    onCreateChat(); // No necesita validar roomName
-  };
+  setError('');
+  // Generar un ID aleatorio de 4 dígitos
+  const randomId = Math.floor(1000 + Math.random() * 9000).toString();
+  const newRoomName = `Sala-${randomId}`;
+  setRoomName(newRoomName);
+  onCreateChat(newRoomName);
+};
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
