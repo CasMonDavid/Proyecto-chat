@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:3001'); // Asegúrate que el puerto es correcto
+// Cambia 'localhost' por la IP Hamachi y puerto correcto
+const socket = io('http://25.51.24.253:3001');
 
 socket.on('connect', () => {
   console.log('Conectado al servidor de sockets:', socket.id);
@@ -48,7 +49,7 @@ const ChatRoom = ({ roomName, username, onLeave }) => {
 
   const enviarMensaje = async (nombreSesion, contenido) => {
     const token = localStorage.getItem('token');
-    await fetch('http://localhost:3001/api/mensajes/enviar', {
+    await fetch('http://25.51.24.253:3001/api/mensajes/enviar', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

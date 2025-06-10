@@ -14,65 +14,62 @@ const App = () => {
   });
   const [roomName, setRoomName] = useState('');
 
+  const handleLogin = async (credentials) => {
+    try {
+      const response = await fetch('http://25.51.24.253:3001/api/usuarios/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usernameOrEmail: credentials.username,
+          contrasenna: credentials.password
+        })
+      });
 
-const handleLogin = async (credentials) => {
-  try {
-    const response = await fetch('http://localhost:3001/api/usuarios/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        usernameOrEmail: credentials.username,
-        contrasenna: credentials.password
-      })
-    });
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.message || 'Error al iniciar sesión');
+        return;
+      }
 
-    const data = await response.json();
-    if (!response.ok) {
-      alert(data.message || 'Error al iniciar sesión');
-      return;
+      localStorage.setItem('token', data.token);
+
+      setUserData({
+        username: data.nombre || credentials.username,
+        email: data.email
+      });
+      setCurrentView('home');
+    } catch (error) {
+      alert('Error de red o servidor');
     }
-
-    // Guarda el token para futuras peticiones
-    localStorage.setItem('token', data.token);
-
-    setUserData({
-      username: data.nombre || credentials.username,
-      email: data.email
-    });
-    setCurrentView('home');
-  } catch (error) {
-    alert('Error de red o servidor');
-  }
-};
+  };
 
   const handleRegister = async (credentials) => {
-  try {
-    // El backend espera: nombre, email, contrasenna
-    const response = await fetch('http://localhost:3001/api/usuarios/registrar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nombre: credentials.username,
-        email: credentials.email,
-        contrasenna: credentials.password
-      })
-    });
+    try {
+      const response = await fetch('http://25.51.24.253:3001/api/usuarios/registrar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: credentials.username,
+          email: credentials.email,
+          contrasenna: credentials.password
+        })
+      });
 
-    const data = await response.json();
-    if (!response.ok) {
-      alert(data.message || 'Error al registrar usuario');
-      return;
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.message || 'Error al registrar usuario');
+        return;
+      }
+
+      setUserData({
+        username: credentials.username,
+        email: credentials.email
+      });
+      setCurrentView('home');
+    } catch (error) {
+      alert('Error de red o servidor');
     }
-
-    setUserData({
-      username: credentials.username,
-      email: credentials.email
-    });
-    setCurrentView('home');
-  } catch (error) {
-    alert('Error de red o servidor');
-  }
-};
+  };
 
   const handleJoinChat = (room) => {
     setRoomName(room);
@@ -81,63 +78,63 @@ const handleLogin = async (credentials) => {
   };
 
   const crearSala = async (nombreSala) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch('http://localhost:3001/api/sesiones/crear', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ nombre: nombreSala })
-  });
-  return await response.json();
-};
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://25.51.24.253:3001/api/sesiones/crear', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ nombre: nombreSala })
+    });
+    return await response.json();
+  };
 
-const buscarSala = async (nombreSala) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`http://localhost:3001/api/sesiones/buscar?nombre=${encodeURIComponent(nombreSala)}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  return await response.json();
-};
+  const buscarSala = async (nombreSala) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://25.51.24.253:3001/api/sesiones/buscar?nombre=${encodeURIComponent(nombreSala)}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return await response.json();
+  };
 
-const unirseSala = async (nombreSala) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch('http://localhost:3001/api/sesiones/add-usuario', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ nombre: nombreSala })
-  });
-  return await response.json();
-};
+  const unirseSala = async (nombreSala) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://25.51.24.253:3001/api/sesiones/add-usuario', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ nombre: nombreSala })
+    });
+    return await response.json();
+  };
 
-const handleCreateChat = async (newRoom) => {
-  setRoomName(newRoom);
-  await crearSala(newRoom);
-  setCurrentView('chat');
-};
+  const handleCreateChat = async (newRoom) => {
+    setRoomName(newRoom);
+    await crearSala(newRoom);
+    setCurrentView('chat');
+  };
 
-const salirSala = async (nombreSala) => {
-  const token = localStorage.getItem('token');
-  await fetch('http://localhost:3001/api/sesiones/remove-usuario', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ nombre: nombreSala })
-  });
-};
+  const salirSala = async (nombreSala) => {
+    const token = localStorage.getItem('token');
+    await fetch('http://25.51.24.253:3001/api/sesiones/remove-usuario', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ nombre: nombreSala })
+    });
+  };
 
   const handleLeaveChat = async () => {
-  await salirSala(roomName); 
-  setCurrentView('home');
-};
+    await salirSala(roomName); 
+    setCurrentView('home');
+  };
 
   return (
     <>
@@ -149,9 +146,9 @@ const salirSala = async (nombreSala) => {
       )}
       {currentView === 'register' && (
         <AuthRegisterForm
-        onRegister={handleRegister}
-        onSwitchToLogin={() => setCurrentView('login')} 
-       />
+          onRegister={handleRegister}
+          onSwitchToLogin={() => setCurrentView('login')} 
+        />
       )}
       {currentView === 'home' && (
         <ChatHome
