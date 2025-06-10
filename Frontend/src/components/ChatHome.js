@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 const socket = io('http://25.2.232.183:3001');
@@ -6,27 +6,36 @@ const socket = io('http://25.2.232.183:3001');
 const ChatHome = ({ username, onJoinChat, onCreateChat, onlineUsers, onLogout, buscarSala, unirseSala }) => {
   const [roomName, setRoomName] = useState('');
   const [error, setError] = useState('');
-  const [salas, setSalas] = useState([]); // Nuevo estado para las salas
+  const [salas, setSalas] = useState([]);
+  const pendingRoomToJoin = useRef(null); // Para saber si estamos esperando unirnos a una sala recién creada
 
   useEffect(() => {
-    // Escuchar cuando se crea una nueva sala
-    socket.on('sala_creada', (nuevaSala) => {
+    socket.on('sala_creada', async (nuevaSala) => {
       setSalas((prev) => [...prev, nuevaSala]);
+      // Si la sala creada es la que acabamos de crear, únirse automáticamente
+      if (pendingRoomToJoin.current === nuevaSala) {
+        const joinResult = await unirseSala(nuevaSala);
+        if (joinResult.session) {
+          setError('');
+          onJoinChat(nuevaSala);
+        } else {
+          setError(joinResult.message || 'No se pudo unir a la sala.');
+        }
+        pendingRoomToJoin.current = null;
+      }
     });
 
-    // Obtener salas existentes al conectar
     socket.on('salas_existentes', (listaSalas) => {
       setSalas(listaSalas);
     });
 
-    // Pedir las salas al servidor al montar
     socket.emit('obtener_salas');
 
     return () => {
       socket.off('sala_creada');
       socket.off('salas_existentes');
     };
-  }, []);
+  }, [unirseSala, onJoinChat]);
 
   const handleJoin = async () => {
     if (roomName.trim().length < 5) {
@@ -34,13 +43,11 @@ const ChatHome = ({ username, onJoinChat, onCreateChat, onlineUsers, onLogout, b
       return;
     }
     setError('');
-    // Buscar la sala en la base de datos usando buscarSala
     const salaExiste = await buscarSala(roomName);
     if (!salaExiste) {
       setError('Sala no encontrada.');
       return;
     }
-    // Unirse a la sala
     const joinResult = await unirseSala(roomName);
     if (joinResult.session) {
       setError('');
@@ -49,16 +56,15 @@ const ChatHome = ({ username, onJoinChat, onCreateChat, onlineUsers, onLogout, b
       setError(joinResult.message || 'No se pudo unir a la sala.');
     }
   };
-  const handleCreate = () => {
-  setError('');
-  const randomId = Math.floor(10000 + Math.random() * 90000).toString();
-  const newRoomName = randomId;
-  setRoomName(newRoomName);
-  socket.emit('crear_sala', newRoomName);
-  // Refresca la lista de salas después de crear
-  socket.emit('obtener_salas');
-  onCreateChat(newRoomName);
-};
+
+  const handleCreate = async () => {
+    setError('');
+    const randomId = Math.floor(10000 + Math.random() * 90000).toString();
+    pendingRoomToJoin.current = randomId;
+    socket.emit('crear_sala', randomId);
+    // No actualices setRoomName aquí, así el input no cambia
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
