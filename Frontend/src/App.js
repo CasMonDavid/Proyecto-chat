@@ -17,7 +17,7 @@ const App = () => {
 
 const handleLogin = async (credentials) => {
   try {
-    const response = await fetch('http://localhost:3001/api/usuarios/login', {
+    const response = await fetch('http://25.2.232.183:3001/api/usuarios/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -48,7 +48,7 @@ const handleLogin = async (credentials) => {
   const handleRegister = async (credentials) => {
   try {
     // El backend espera: nombre, email, contrasenna
-    const response = await fetch('http://localhost:3001/api/usuarios/registrar', {
+    const response = await fetch('http://25.2.232.183:3001/api/usuarios/registrar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -82,7 +82,7 @@ const handleLogin = async (credentials) => {
 
   const crearSala = async (nombreSala) => {
   const token = localStorage.getItem('token');
-  const response = await fetch('http://localhost:3001/api/sesiones/crear', {
+  const response = await fetch('http://25.2.232.183:3001/api/sesiones/crear', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ const handleLogin = async (credentials) => {
 
 const buscarSala = async (nombreSala) => {
   const token = localStorage.getItem('token');
-  const response = await fetch(`http://localhost:3001/api/sesiones/buscar?nombre=${encodeURIComponent(nombreSala)}`, {
+  const response = await fetch(`http://25.2.232.183:3001/api/sesiones/buscar?nombre=${encodeURIComponent(nombreSala)}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -105,7 +105,7 @@ const buscarSala = async (nombreSala) => {
 
 const unirseSala = async (nombreSala) => {
   const token = localStorage.getItem('token');
-  const response = await fetch('http://localhost:3001/api/sesiones/add-usuario', {
+  const response = await fetch('http://25.2.232.183:3001/api/sesiones/add-usuario', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ const handleCreateChat = async (newRoom) => {
 
 const salirSala = async (nombreSala) => {
   const token = localStorage.getItem('token');
-  await fetch('http://localhost:3001/api/sesiones/remove-usuario', {
+  await fetch('http://25.2.232.183:3001/api/sesiones/remove-usuario', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

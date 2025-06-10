@@ -11,9 +11,16 @@ const server = http.createServer(app);
 
 const { Server } = require("socket.io");
 
+// Permite ambos orígenes
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://25.2.232.183:3000", // Si algún cliente accede así
+  "http://25.2.232.183:3001"  // Si sirves el frontend desde el backend
+];
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Cambia si usas otro frontend
+    origin: allowedOrigins, // Cambia si usas otro frontend
     methods: ["GET", "POST"]
   }
 });
@@ -43,7 +50,7 @@ io.on("connection", (socket) => {
 });
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: allowedOrigins,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -61,6 +68,6 @@ app.use("/api/sesiones", sesionesRutas);
 const MensajesRutas = require('./Rutas/mensajeRutas')
 app.use("/api/mensajes", MensajesRutas)
 
-server.listen(port, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${port}`);
+server.listen(port, '0.0.0.0', () => {
+  console.log(`✅ Servidor corriendo en http://0.0.0.0:${port}`);
 });

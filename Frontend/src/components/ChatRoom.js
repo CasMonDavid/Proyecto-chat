@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:3001'); // Asegúrate que el puerto es correcto
+const socket = io('http://25.2.232.183:3001'); // Asegúrate que el puerto es correcto
 
 socket.on('connect', () => {
   console.log('Conectado al servidor de sockets:', socket.id);
