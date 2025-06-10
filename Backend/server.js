@@ -3,8 +3,10 @@ const cors = require("cors");
 const http = require("http");
 require("dotenv").config();
 require("./Config/db"); // Aquí ya estás usando la IP Hamachi en MongoDB
+const Sesion = require("./Modelos/sesion"); // Importa el modelo de sesión
 
-const ipHamachi = "25.51.24.253"; // IP Hamachi del servidor
+
+const ipHamachi = "25.2.232.183"; // IP Hamachi del servidor
 const port = process.env.PORT || 3001;
 
 const app = express();
@@ -36,6 +38,34 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("❌ Usuario desconectado:", socket.id);
   });
+
+    // Evento para obtener todas las salas
+  socket.on("obtener_salas", async () => {
+    try {
+      const sesiones = await Sesion.find({}, "nombre"); // Solo el campo nombre
+      const nombres = sesiones.map(s => s.nombre);
+      socket.emit("salas_existentes", nombres);
+    } catch (err) {
+      console.error("Error obteniendo salas:", err);
+      socket.emit("salas_existentes", []);
+    }
+  });
+
+  // Evento para crear una sala
+  socket.on("crear_sala", async (nombreSala) => {
+    try {
+      // Verifica si ya existe
+      let sesion = await Sesion.findOne({ nombre: nombreSala });
+      if (!sesion) {
+        sesion = new Sesion({ nombre: nombreSala, participantes: [] });
+        await sesion.save();
+      }
+      io.emit("sala_creada", nombreSala);
+    } catch (err) {
+      console.error("Error creando sala:", err);
+    }
+  });
+
 });
 
 const corsOptions = {

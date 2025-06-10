@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // IP Hamachi del servidor
-const uri = "mongodb://25.51.24.253:27017/chat"; 
+const uri = "mongodb://25.2.232.183:27017/chat"; 
 
 mongoose.connect(uri)
   .then(() => console.log("✅ Conectado a MongoDB vía Hamachi"))

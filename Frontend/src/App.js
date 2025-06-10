@@ -6,6 +6,8 @@ import ChatRoom from './components/ChatRoom';
 import { onlineUsers } from './mock/users';
 import { joinChat, createChat } from './utils/chatService';
 
+const ipHamachi = "25.2.232.183"; // IP Hamachi del servidor
+
 const App = () => {
   const [currentView, setCurrentView] = useState('login');
   const [userData, setUserData] = useState({
@@ -16,7 +18,7 @@ const App = () => {
 
   const handleLogin = async (credentials) => {
     try {
-      const response = await fetch('http://25.51.24.253:3001/api/usuarios/login', {
+      const response = await fetch(`http://${ipHamachi}:3001/api/usuarios/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -45,7 +47,7 @@ const App = () => {
 
   const handleRegister = async (credentials) => {
     try {
-      const response = await fetch('http://25.51.24.253:3001/api/usuarios/registrar', {
+      const response = await fetch(`http://${ipHamachi}:3001/api/usuarios/registrar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -79,7 +81,7 @@ const App = () => {
 
   const crearSala = async (nombreSala) => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://25.51.24.253:3001/api/sesiones/crear', {
+    const response = await fetch(`http://${ipHamachi}:3001/api/sesiones/crear`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -92,7 +94,7 @@ const App = () => {
 
   const buscarSala = async (nombreSala) => {
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://25.51.24.253:3001/api/sesiones/buscar?nombre=${encodeURIComponent(nombreSala)}`, {
+    const response = await fetch(`http://${ipHamachi}:3001/api/sesiones/buscar?nombre=${encodeURIComponent(nombreSala)}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -102,7 +104,7 @@ const App = () => {
 
   const unirseSala = async (nombreSala) => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://25.51.24.253:3001/api/sesiones/add-usuario', {
+    const response = await fetch(`http://${ipHamachi}:3001/api/sesiones/add-usuario`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -121,7 +123,7 @@ const App = () => {
 
   const salirSala = async (nombreSala) => {
     const token = localStorage.getItem('token');
-    await fetch('http://25.51.24.253:3001/api/sesiones/remove-usuario', {
+    await fetch(`http://${ipHamachi}:3001/api/sesiones/remove-usuario`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
