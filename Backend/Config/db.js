@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 // IP Hamachi del servidor
-const uri = "mongodb://25.2.232.183:27017/chat"; 
 
-mongoose.connect(uri)
+mongoose.connect(process.env.MONGODB_URI , {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000 // Tiempo de espera para la conexión
+})
   .then(() => console.log("✅ Conectado a MongoDB vía Hamachi"))
   .catch(err => console.error("❌ Error conectando a MongoDB", err));
 

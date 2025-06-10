@@ -6,7 +6,7 @@ require("./Config/db"); // Aquí ya estás usando la IP Hamachi en MongoDB
 const Sesion = require("./Modelos/sesion"); // Importa el modelo de sesión
 
 
-const ipHamachi = "25.2.232.183"; // IP Hamachi del servidor
+const ipHamachi = "25.5.28.176"; // IP Hamachi del servidor
 const port = process.env.PORT || 3001;
 
 const app = express();
